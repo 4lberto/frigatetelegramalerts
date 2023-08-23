@@ -3,7 +3,6 @@ import json
 import logging
 import shutil
 import uuid
-from time import sleep
 from typing import Dict
 
 import requests
@@ -13,12 +12,12 @@ import telegram
 
 logging.basicConfig(level=logging.INFO)
 
-frigate_basic_auth_user = "USER"
-frigate_basic_auth_password = "PASSWORD"
-frigate_base_url = "https://my_home_frigate_url:port"
+frigate_basic_auth_user = "XXXX"
+frigate_basic_auth_password = "XXX"
+frigate_base_url = "https://XXX:XX"
 
-telegram_chat_id = "-123456789"
-telegram_bot_token = "093458609587094:lisñoisfgpoi098w3ñohiañnfg"
+telegram_chat_id = "XXXXXX"
+telegram_bot_token = "XXXXXX"
 
 bot = telegram.Bot(token=telegram_bot_token)
 sleep_time_in_secs = 5
@@ -61,13 +60,22 @@ def __download_photo(img_url: str) -> str:
     return full_path
 
 
-if __name__ == '__main__':
+async def main():
     notified_events = set()
-    while (True):
-        latest_event: Dict = get_latest_event()
-        if latest_event is not None:
-            if latest_event["id"] not in notified_events:
-                asyncio.run(notify_telegram(latest_event))
-                notified_events.add(latest_event["id"])
 
-        sleep(sleep_time_in_secs)
+    while (True):
+        try:
+            latest_event: Dict = get_latest_event()
+            if latest_event is not None:
+                if latest_event["id"] not in notified_events:
+                    await notify_telegram(latest_event)
+                    notified_events.add(latest_event["id"])
+        except Exception:
+            logging.error("Exception in the main loop", exc_info=True)
+            logging.error("Continuing...")
+        finally:
+            await asyncio.sleep(sleep_time_in_secs)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
