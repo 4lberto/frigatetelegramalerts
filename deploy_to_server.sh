@@ -1,0 +1,1 @@
+scp -r frigatetelegramalerts 'alberto@192.168.1.122:/home/alberto/dev'
